@@ -1,0 +1,160 @@
+#include <array>
+
+#include <gtest/gtest.h>
+
+#include "JPAssistOverlayLayout.h"
+
+namespace {
+
+struct Resolution {
+    float width;
+    float height;
+};
+
+TEST(JPAssistOverlayLayout, RemainsInsideRepresentativeViewports) {
+    constexpr std::array<Resolution, 3> resolutions = { {
+        { 1280.0f, 720.0f },
+        { 1920.0f, 1080.0f },
+        { 3440.0f, 1440.0f },
+    } };
+    constexpr std::array<float, 3> scales = { 0.7f, 1.0f, 1.5f };
+
+    for (const Resolution resolution : resolutions) {
+        for (const float scale : scales) {
+            const JPAssist::OverlayLayout layout =
+                JPAssist::JPAssistOverlay_ComputeLayout(0.0f, 0.0f, resolution.width, resolution.height, scale);
+            EXPECT_GT(layout.width, 0.0f);
+            EXPECT_GT(layout.height, 0.0f);
+            EXPECT_GE(layout.x, 0.0f);
+            EXPECT_GE(layout.y, 0.0f);
+            EXPECT_LE(layout.x + layout.width, resolution.width);
+            EXPECT_LE(layout.y + layout.height, resolution.height);
+        }
+    }
+}
+
+TEST(JPAssistOverlayLayout, KeepsWideStudyCardBottomCenteredAt720p) {
+    const JPAssist::OverlayLayout layout =
+        JPAssist::JPAssistOverlay_ComputeLayout(0.0f, 0.0f, 1280.0f, 720.0f, 1.5f);
+
+    EXPECT_LE(layout.height, 130.0f * 1.5f);
+    EXPECT_FLOAT_EQ(layout.x, (1280.0f - layout.width) * 0.5f);
+    EXPECT_LE(layout.y + layout.height, 720.0f);
+}
+
+TEST(JPAssistOverlayLayout, HonorsOffsetWorkAreaAndSanitizesScale) {
+    const JPAssist::OverlayLayout layout =
+        JPAssist::JPAssistOverlay_ComputeLayout(100.0f, 50.0f, 800.0f, 600.0f, NAN);
+
+    EXPECT_GE(layout.x, 100.0f);
+    EXPECT_GE(layout.y, 50.0f);
+    EXPECT_LE(layout.x + layout.width, 900.0f);
+    EXPECT_LE(layout.y + layout.height, 650.0f);
+    EXPECT_EQ(layout.scale, 1.0f);
+}
+
+TEST(JPAssistOverlayLayout, HandlesMinimalWorkArea) {
+    const JPAssist::OverlayLayout layout =
+        JPAssist::JPAssistOverlay_ComputeLayout(10.0f, 20.0f, 1.0f, 1.0f, 1.5f);
+
+    EXPECT_GE(layout.x, 10.0f);
+    EXPECT_GE(layout.y, 20.0f);
+    EXPECT_LE(layout.x + layout.width, 11.0f);
+    EXPECT_LE(layout.y + layout.height, 21.0f);
+}
+
+TEST(JPAssistOverlayLayout, AnchorsImmediatelyAboveLowerDialogue) {
+    constexpr float height = 1080.0f;
+    constexpr float dialogueTop = 142.0f / 240.0f;
+    constexpr float dialogueBottom = 206.0f / 240.0f;
+    const JPAssist::OverlayLayout layout = JPAssist::JPAssistOverlay_ComputeAdaptiveLayout(
+        0.0f, 0.0f, 1920.0f, height, 1.0f, true, dialogueTop, dialogueBottom);
+
+    EXPECT_FLOAT_EQ(layout.y + layout.height, dialogueTop * height - 12.0f);
+}
+
+TEST(JPAssistOverlayLayout, AnchorsImmediatelyBelowUpperDialogue) {
+    const JPAssist::OverlayLayout layout = JPAssist::JPAssistOverlay_ComputeAdaptiveLayout(
+        0.0f, 0.0f, 1920.0f, 1080.0f, 1.0f, true, 38.0f / 240.0f, 102.0f / 240.0f);
+
+    EXPECT_FLOAT_EQ(layout.y, 102.0f / 240.0f * 1080.0f + 12.0f);
+}
+
+TEST(JPAssistOverlayLayout, KeepsBottomScreenEdgeWithoutDialogue) {
+    const JPAssist::OverlayLayout baseline =
+        JPAssist::JPAssistOverlay_ComputeLayout(0.0f, 0.0f, 1920.0f, 1080.0f, 1.0f);
+    const JPAssist::OverlayLayout layout = JPAssist::JPAssistOverlay_ComputeAdaptiveLayout(
+        0.0f, 0.0f, 1920.0f, 1080.0f, 1.0f, false, 0.0f, 0.0f);
+
+    EXPECT_FLOAT_EQ(layout.y, baseline.y);
+}
+
+TEST(JPAssistOverlayLayout, UsesOppositeScreenEdgeWhenAdjacentSpaceDoesNotFit) {
+    const JPAssist::OverlayLayout baseline =
+        JPAssist::JPAssistOverlay_ComputeLayout(0.0f, 0.0f, 640.0f, 300.0f, 1.0f);
+    const JPAssist::OverlayLayout layout = JPAssist::JPAssistOverlay_ComputeAdaptiveLayout(
+        0.0f, 0.0f, 640.0f, 300.0f, 1.0f, true, 80.0f / 300.0f, 250.0f / 300.0f);
+
+    const float edgeMargin = 300.0f - (baseline.y + baseline.height);
+    EXPECT_FLOAT_EQ(layout.y, edgeMargin);
+}
+
+TEST(JPAssistOverlayLayout, IgnoresInvalidDialogueBounds) {
+    const JPAssist::OverlayLayout baseline =
+        JPAssist::JPAssistOverlay_ComputeLayout(0.0f, 0.0f, 1280.0f, 720.0f, 1.0f);
+    const JPAssist::OverlayLayout layout = JPAssist::JPAssistOverlay_ComputeAdaptiveLayout(
+        0.0f, 0.0f, 1280.0f, 720.0f, 1.0f, true, NAN, 1.0f);
+
+    EXPECT_FLOAT_EQ(layout.y, baseline.y);
+}
+
+TEST(JPAssistOverlayLayout, ClassifiesIndependentDialoguePlacementProfiles) {
+    EXPECT_EQ(JPAssist::JPAssistOverlay_ClassifyPlacement(false, 0.0f, 0.0f),
+              JPAssist::OverlayPlacementProfile::NoDialogue);
+    EXPECT_EQ(JPAssist::JPAssistOverlay_ClassifyPlacement(true, 0.10f, 0.35f),
+              JPAssist::OverlayPlacementProfile::UpperDialogue);
+    EXPECT_EQ(JPAssist::JPAssistOverlay_ClassifyPlacement(true, 0.65f, 0.90f),
+              JPAssist::OverlayPlacementProfile::LowerDialogue);
+    EXPECT_EQ(JPAssist::JPAssistOverlay_ClassifyPlacement(true, NAN, 0.90f),
+              JPAssist::OverlayPlacementProfile::NoDialogue);
+}
+
+TEST(JPAssistOverlayLayout, ShiftConstrainsDragToDominantAxis) {
+    const JPAssist::OverlayDragResult horizontal = JPAssist::JPAssistOverlay_ApplyDragModifiers(
+        100.0f, 100.0f, 200.0f, 20.0f, 800.0f, 120.0f, 0.0f, 0.0f, 1920.0f, 1080.0f, true, false, 20.0f);
+    EXPECT_FLOAT_EQ(horizontal.x, 300.0f);
+    EXPECT_FLOAT_EQ(horizontal.y, 100.0f);
+
+    const JPAssist::OverlayDragResult vertical = JPAssist::JPAssistOverlay_ApplyDragModifiers(
+        100.0f, 100.0f, 20.0f, 200.0f, 800.0f, 120.0f, 0.0f, 0.0f, 1920.0f, 1080.0f, true, false, 20.0f);
+    EXPECT_FLOAT_EQ(vertical.x, 100.0f);
+    EXPECT_FLOAT_EQ(vertical.y, 300.0f);
+}
+
+TEST(JPAssistOverlayLayout, ControlSnapsDragToViewportCenterAndEdges) {
+    const JPAssist::OverlayDragResult centered = JPAssist::JPAssistOverlay_ApplyDragModifiers(
+        0.0f, 100.0f, 472.0f, 17.0f, 1000.0f, 130.0f, 0.0f, 0.0f, 1920.0f, 1080.0f, false, true, 20.0f);
+    EXPECT_FLOAT_EQ(centered.x, 460.0f);
+    EXPECT_FLOAT_EQ(centered.y, 117.0f);
+    EXPECT_TRUE(centered.snappedX);
+    EXPECT_FALSE(centered.snappedY);
+    EXPECT_FLOAT_EQ(centered.guideX, 960.0f);
+
+    const JPAssist::OverlayDragResult bottomRight = JPAssist::JPAssistOverlay_ApplyDragModifiers(
+        0.0f, 0.0f, 910.0f, 940.0f, 1000.0f, 130.0f, 0.0f, 0.0f, 1920.0f, 1080.0f, false, true, 20.0f);
+    EXPECT_FLOAT_EQ(bottomRight.x, 920.0f);
+    EXPECT_FLOAT_EQ(bottomRight.y, 950.0f);
+    EXPECT_TRUE(bottomRight.snappedX);
+    EXPECT_TRUE(bottomRight.snappedY);
+}
+
+TEST(JPAssistOverlayLayout, AxisConstraintOnlySnapsAlongMovementAxis) {
+    const JPAssist::OverlayDragResult result = JPAssist::JPAssistOverlay_ApplyDragModifiers(
+        0.0f, 9.0f, 472.0f, 12.0f, 1000.0f, 130.0f, 0.0f, 0.0f, 1920.0f, 1080.0f, true, true, 20.0f);
+    EXPECT_FLOAT_EQ(result.x, 460.0f);
+    EXPECT_FLOAT_EQ(result.y, 9.0f);
+    EXPECT_TRUE(result.snappedX);
+    EXPECT_FALSE(result.snappedY);
+}
+
+} // namespace

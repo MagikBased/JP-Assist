@@ -10,9 +10,9 @@ storage, external monitoring, a mail provider, and an incident contact.
 From the repository root:
 
 ```bash
-services/learning_platform/scripts/staging.sh status
-services/learning_platform/scripts/staging.sh smoke
-services/learning_platform/scripts/staging.sh restore-drill
+apps/learning-platform/scripts/staging.sh status
+apps/learning-platform/scripts/staging.sh smoke
+apps/learning-platform/scripts/staging.sh restore-drill
 ```
 
 The Grafana **JP Assist Operations** dashboard should show readiness `1`, no
@@ -28,18 +28,18 @@ idempotent due-review reminders and cleans bounded operational history. Inspect
 Run the full disposable operational qualification before a release:
 
 ```bash
-services/learning_platform/scripts/qualify_operations.sh
+apps/learning-platform/scripts/qualify_operations.sh
 ```
 
 It creates no personal data. The reports under the ignored
-`services/learning_platform/var/qualification/` directory cover eight
+`apps/learning-platform/var/qualification/` directory cover eight
 concurrent devices, 8,000 unique words, retry deduplication, account reads,
 memory/database limits, and a 5,000-word schema forward/rollback/reapply cycle.
 
 The CI release gate also runs the disposable stack rehearsal:
 
 ```bash
-services/learning_platform/scripts/rehearse_staging.sh
+apps/learning-platform/scripts/rehearse_staging.sh
 ```
 
 It selects a unique Compose project, starts fresh volumes, passes production
@@ -96,7 +96,7 @@ pre-restore safety copy when an active database exists.
 docker compose run --rm app python -m learning_platform.manage \
   restore /backups/RECOVERY.sqlite3 --yes
 docker compose up -d
-python services/learning_platform/scripts/deployment_smoke.py \
+python apps/learning-platform/scripts/deployment_smoke.py \
   --production https://learn.example.com
 ```
 

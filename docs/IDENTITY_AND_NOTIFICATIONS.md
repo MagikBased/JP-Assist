@@ -32,7 +32,7 @@ passwords, message bodies, or SMTP credentials.
 ## Local mail delivery
 
 Development defaults to a mode-0600 JSONL mailbox at
-`services/learning_platform/var/dev-mailbox.jsonl`. This makes recovery flows
+`apps/learning-platform/var/dev-mailbox.jsonl`. This makes recovery flows
 testable without any network delivery. It is not a production mail transport
 and contains live action links until the file is removed.
 
@@ -57,7 +57,7 @@ prevents duplicate daily messages.
 Run one reminder pass with:
 
 ```bash
-PYTHONPATH=services/learning_platform \
+PYTHONPATH=apps/learning-platform \
   venv/learning-platform/bin/python -m learning_platform.manage send-reminders
 ```
 

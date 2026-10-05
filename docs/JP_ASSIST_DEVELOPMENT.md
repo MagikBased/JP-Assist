@@ -38,7 +38,7 @@ boundary so deferred testing can start from a known point.
   event outbox, idempotent background uploads, cross-game vocabulary/gameplay
   statistics, and a server-generated saved-word manifest for the existing
   stable-GUID Anki builder. Extracted dialogue remains local. See
-  `LEARNING_PLATFORM_MVP.md` and `services/learning_platform/README.md`.
+  `LEARNING_PLATFORM_MVP.md` and `apps/learning-platform/README.md`.
 - A disposable end-to-end MVP acceptance runner covers a real localhost HTTP
   service, account/device pairing, retry deduplication, contextual saved-word
   export, package validation, and stable Anki IDs. A one-command saved-deck
@@ -103,7 +103,7 @@ message-state or ImGui assumptions.
   a selected token's normalized corpus span is mapped to the already-decoded
   Japanese glyph positions and receives a blue backlight before glyph drawing.
 - Dictionary sense selection is heuristic and requires human review through
-  `scripts/jp_assist/overrides.py`; the generated review queue tracks remaining
+  `games/ocarina-of-time/tools/overrides.py`; the generated review queue tracks remaining
   unresolved definitions.
 - Runtime source-hash verification is represented in the corpus but not yet
   compared against raw message-entry hashes exposed by the game.
@@ -113,5 +113,5 @@ message-state or ImGui assumptions.
 ## Runtime data location
 
 The game loads `jp_assist/runtime_data.json` using Ship's application-directory
-search. Build it using `scripts/jp_assist/README.md`, then copy that directory
+search. Build it using `games/ocarina-of-time/tools/README.md`, then copy that directory
 into the relevant Ship of Harkinian application data directory before testing.

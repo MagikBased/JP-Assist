@@ -23,7 +23,7 @@ From the repository root, one command builds and starts a loopback-only stack
 with production settings:
 
 ```bash
-services/learning_platform/scripts/staging.sh up
+apps/learning-platform/scripts/staging.sh up
 ```
 
 It validates the Compose configuration, waits for readiness, and runs the
@@ -35,13 +35,13 @@ local certificate, so a browser trust exception may be required. The committed
 public deployment.
 
 ```bash
-services/learning_platform/scripts/staging.sh status
-services/learning_platform/scripts/staging.sh logs app
-services/learning_platform/scripts/staging.sh logs-once maintenance
-services/learning_platform/scripts/staging.sh smoke
-services/learning_platform/scripts/staging.sh backup
-services/learning_platform/scripts/staging.sh restore-drill
-services/learning_platform/scripts/staging.sh down
+apps/learning-platform/scripts/staging.sh status
+apps/learning-platform/scripts/staging.sh logs app
+apps/learning-platform/scripts/staging.sh logs-once maintenance
+apps/learning-platform/scripts/staging.sh smoke
+apps/learning-platform/scripts/staging.sh backup
+apps/learning-platform/scripts/staging.sh restore-drill
+apps/learning-platform/scripts/staging.sh down
 ```
 
 `down` stops containers without deleting persistent volumes. The launcher
@@ -57,7 +57,7 @@ being discarded and the exact confirmation variable is set.
 
 ## Configure and start
 
-From `services/learning_platform`:
+From `apps/learning-platform`:
 
 ```bash
 cp .env.example .env
@@ -157,8 +157,8 @@ only the configured number of `platform-*.sqlite3` files. Trigger and validate
 one manually with:
 
 ```bash
-services/learning_platform/scripts/staging.sh backup
-services/learning_platform/scripts/staging.sh restore-drill
+apps/learning-platform/scripts/staging.sh backup
+apps/learning-platform/scripts/staging.sh restore-drill
 ```
 
 The drill restores the newest artifact into an isolated temporary database,

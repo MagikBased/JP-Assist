@@ -8,7 +8,7 @@ review log entry.
 
 The authoritative history is the append-only sequence of rating and UTC review
 timestamp pairs. `review_state` is a disposable projection. The conformance
-fixture in `services/learning_platform/tests/fixtures/fsrs6_conformance.json`
+fixture in `apps/learning-platform/tests/fixtures/fsrs6_conformance.json`
 locks representative learning, graduation, lapse, relearning, and mature-card
 results to this package version.
 

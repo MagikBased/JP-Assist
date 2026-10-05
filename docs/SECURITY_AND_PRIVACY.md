@@ -46,7 +46,7 @@ password material, and mail credentials.
 Run the idempotent cleanup pass regularly:
 
 ```bash
-PYTHONPATH=services/learning_platform \
+PYTHONPATH=apps/learning-platform \
   venv/learning-platform/bin/python -m learning_platform.manage cleanup
 ```
 
@@ -145,7 +145,7 @@ final threat-model review.
   has no unresolved high or critical finding; its remaining report contains
   nine medium and one negligible finding.
 - CVE-2026-85091 in Alpine zlib is marked `not_affected` in
-  `services/learning_platform/security/openvex.json`. Exploitation requires the
+  `apps/learning-platform/security/openvex.json`. Exploitation requires the
   non-blocking `gzFile` write APIs; JP Assist neither calls nor exposes those
   APIs. The maintainer-owned exception expires on 2026-11-02 and must be
   revisited sooner if zlib or native compression code changes.

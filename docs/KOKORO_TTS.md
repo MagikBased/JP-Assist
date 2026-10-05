@@ -34,20 +34,20 @@ are not required by the website, mod, corpus tools, or text-only deck builder:
 ```bash
 python3 -m venv .venv-jp-assist-tts
 . .venv-jp-assist-tts/bin/activate
-pip install -r scripts/jp_assist/requirements-tts-kokoro.txt
+pip install -r games/ocarina-of-time/tools/requirements-tts-kokoro.txt
 ```
 
 Then stage both word and sentence clips:
 
 ```bash
-python scripts/jp_assist/generate_catalog_audio.py \
+python games/ocarina-of-time/tools/generate_catalog_audio.py \
   --chapter 1 \
   --provider kokoro-local \
   --accept-kokoro-license-review
 ```
 
 The first run may download model and voice weights. Output goes to the ignored
-`scripts/jp_assist/out/catalog_audio/` directory with a manifest marked
+`games/ocarina-of-time/tools/out/catalog_audio/` directory with a manifest marked
 `needs-human-review`. Generation does not mutate catalog JSON or publish media.
 After pronunciation, clipping, silence, and license review, approved WAV files
 can be copied under the catalog content root and their relative paths added to
@@ -56,5 +56,5 @@ can be copied under the catalog content root and their relative paths added to
 To explicitly exercise the dependency-free path:
 
 ```bash
-python scripts/jp_assist/generate_catalog_audio.py --chapter 1 --provider none
+python games/ocarina-of-time/tools/generate_catalog_audio.py --chapter 1 --provider none
 ```

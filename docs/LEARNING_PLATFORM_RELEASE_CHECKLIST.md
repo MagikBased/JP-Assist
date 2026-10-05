@@ -30,7 +30,7 @@ Database: schema `9`
 
 ## Artifact handoff
 
-- [x] Run `services/learning_platform/scripts/build_release_candidate.sh 0.3.0-rc.1`
+- [x] Run `apps/learning-platform/scripts/build_release_candidate.sh 0.3.0-rc.1`
   from a clean commit.
 - [x] Verify `SHA256SUMS` for the source archive, image archive, SBOM,
   vulnerability report, manifest, and release notes.
@@ -39,7 +39,7 @@ Database: schema `9`
   checksums in the generated `manifest.json` and `SHA256SUMS` files.
 
 The handoff bundle is generated locally under
-`services/learning_platform/var/releases/0.3.0-rc.1/`. These build products are
+`apps/learning-platform/var/releases/0.3.0-rc.1/`. These build products are
 intentionally ignored; the manifest and checksum file inside the bundle are
 the authoritative release-instance record.
 

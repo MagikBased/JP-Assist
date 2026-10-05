@@ -11,5 +11,5 @@ implementation.
 
 The personal corpus builder still reads dialogue from the player's own game
 archive and writes its generated output beneath the ignored
-`scripts/jp_assist/out/` directory. No extracted dialogue is part of this
+`games/ocarina-of-time/tools/out/` directory. No extracted dialogue is part of this
 module.

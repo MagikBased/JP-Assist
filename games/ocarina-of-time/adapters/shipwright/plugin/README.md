@@ -21,7 +21,7 @@ The package is written to:
 build-cmake/games/ocarina-of-time/adapters/shipwright/plugin/jp-assist.o2r
 ```
 
-If `scripts/jp_assist/out/runtime_data.json` exists at configure time, it is
+If `games/ocarina-of-time/tools/out/runtime_data.json` exists at configure time, it is
 included as the plugin corpus. Locally generated audio is included when its
 manifest and audio directory are present. These generated resources remain
 ignored by Git.
@@ -53,5 +53,5 @@ runs all recorded scenarios, and restores the previous config/mod state:
 ```bash
 cmake --build build-cmake --target jpassist_plugin_tests soh
 ctest --test-dir build-cmake/tests/jp_assist --output-on-failure
-./scripts/jp_assist/run_plugin_smoke_suite.sh
+./games/ocarina-of-time/tools/run_plugin_smoke_suite.sh
 ```

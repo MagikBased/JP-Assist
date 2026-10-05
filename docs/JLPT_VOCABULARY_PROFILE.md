@@ -20,7 +20,7 @@ game and personal coverage denominator.
 Regenerate a game manifest after rebuilding the local runtime corpus:
 
 ```bash
-python3 scripts/jp_assist/build_game_vocabulary.py \
+python3 games/ocarina-of-time/tools/build_game_vocabulary.py \
   --jlpt-dir /path/to/OpenJLPT/data/json/vocab \
   --jlpt-version OPENJLPT_COMMIT_OR_RELEASE \
   --output games/ocarina-of-time/catalog/vocabulary.json

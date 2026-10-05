@@ -195,7 +195,7 @@ soh/soh/Enhancements/JPAssist/
 Offline tooling should live outside the game runtime:
 
 ```text
-scripts/jp_assist/
+games/ocarina-of-time/tools/
 ├── extract_dialogue.py
 ├── tokenize_dialogue.py
 ├── validate_corpus.py
@@ -614,7 +614,7 @@ Built as an extension of the Milestone 1 spike (`JPAssistManager.cpp` plus a new
 
 #### Milestone 3 spike findings
 
-Built as `scripts/jp_assist/{extract_dialogue,message_codes,tokenize_dialogue,overrides,validate_corpus}.py`, run against the N64 NTSC 1.2 `oot.o2r` directly - no game process involved. `sudachipy`/`sudachidict_core` (tokenizer) and `jamdict`/`jamdict-data` (a packaged JMdict, no XML build step needed) are both readily pip-installable and were verified working; `scripts/jp_assist/requirements.txt` lists them.
+Built as `games/ocarina-of-time/tools/{extract_dialogue,message_codes,tokenize_dialogue,overrides,validate_corpus}.py`, run against the N64 NTSC 1.2 `oot.o2r` directly - no game process involved. `sudachipy`/`sudachidict_core` (tokenizer) and `jamdict`/`jamdict-data` (a packaged JMdict, no XML build step needed) are both readily pip-installable and were verified working; `games/ocarina-of-time/tools/requirements.txt` lists them.
 
 - **Archive format, reverse-engineered and verified against real bytes** (no exporter tool ships in this repo to document it): a 64-byte OTR resource header, then `u32 msgCount` followed by that many `{u16 id, u8 textboxType, u8 textboxYPos, u32 stringLength, stringLength raw bytes}` records, all little-endian. Confirmed against `oot.o2r`'s actual `text/jpn_message_data_static/jpn_message_data_static` and `text/nes_message_data_static/ntsc_nes_message_data_static` entries, not just inferred from reading loader code.
 - **The Japanese glyph codes are literal Shift-JIS code points**, not a bespoke encoding - confirmed both by a source comment (`soh/src/code/z_kanfont.c`: "The value of `character` is the SHIFT-JIS encoding of the character") and empirically: decoding real message bytes as little-endian u16 code points and Shift-JIS-decoding them produces recognizable real words (e.g. `ポケット`, "pocket"). This means real Unicode Japanese text is recoverable *offline* right now, closing the gap Milestones 1 and 2 both hit at runtime (no CJK font loaded for in-game rendering) - the corpus itself is no longer blocked on that, only in-game *display* still is.

@@ -1,5 +1,6 @@
 set(JPASSIST_PLUGIN_STAGE "${CMAKE_CURRENT_BINARY_DIR}/stage")
 set(JPASSIST_PLUGIN_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/jp-assist.o2r")
+get_filename_component(JPASSIST_REPOSITORY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE)
 
 find_package(nlohmann_json CONFIG REQUIRED)
 include(FetchContent)
@@ -50,7 +51,7 @@ set_target_properties(jpassist_plugin_binary PROPERTIES
     VISIBILITY_INLINES_HIDDEN YES
 )
 
-set(JPASSIST_LOCAL_CORPUS "${PROJECT_SOURCE_DIR}/scripts/jp_assist/out/runtime_data.json")
+set(JPASSIST_LOCAL_CORPUS "${JPASSIST_REPOSITORY_ROOT}/games/ocarina-of-time/tools/out/runtime_data.json")
 if(EXISTS "${JPASSIST_LOCAL_CORPUS}")
     set(JPASSIST_CORPUS_COMMANDS
         COMMAND ${CMAKE_COMMAND} -E make_directory "${JPASSIST_PLUGIN_STAGE}/jp_assist"
@@ -65,7 +66,7 @@ else()
     set(JPASSIST_CORPUS_DEPENDENCY)
 endif()
 
-set(JPASSIST_LOCAL_AUDIO_ROOT "${PROJECT_SOURCE_DIR}/scripts/jp_assist/out/local_bundle/jp_assist")
+set(JPASSIST_LOCAL_AUDIO_ROOT "${JPASSIST_REPOSITORY_ROOT}/games/ocarina-of-time/tools/out/local_bundle/jp_assist")
 if(EXISTS "${JPASSIST_LOCAL_AUDIO_ROOT}/audio_manifest.json" AND
    IS_DIRECTORY "${JPASSIST_LOCAL_AUDIO_ROOT}/audio")
     set(JPASSIST_AUDIO_COMMANDS

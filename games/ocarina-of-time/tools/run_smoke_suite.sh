@@ -3,8 +3,13 @@
 set -u
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-repo_dir=$(cd -- "$script_dir/../.." && pwd)
-app_dir=${JPASSIST_APP_DIR:-"$repo_dir/build-cmake/soh"}
+repo_dir=$(cd -- "$script_dir/../../.." && pwd)
+host_root=${JPASSIST_HOST_ROOT:-}
+if [[ -z "$host_root" && -d "$repo_dir/../soh" && -f "$repo_dir/../CMakeLists.txt" ]]; then
+    host_root=$(cd -- "$repo_dir/.." && pwd)
+fi
+host_root=${host_root:-$repo_dir}
+app_dir=${JPASSIST_APP_DIR:-"$host_root/build-cmake/soh"}
 timeout_seconds=${JPASSIST_SMOKE_TIMEOUT:-120}
 report="$app_dir/jp_assist_smoke_results.json"
 console_log="$app_dir/jp_assist_smoke_console.log"

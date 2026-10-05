@@ -3,9 +3,14 @@
 set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-repo_dir=$(cd -- "$script_dir/../.." && pwd)
-app_dir=${JPASSIST_APP_DIR:-"$repo_dir/build-cmake/soh"}
-plugin_package=${JPASSIST_PLUGIN_PACKAGE:-"$repo_dir/build-cmake/games/ocarina-of-time/adapters/shipwright/plugin/jp-assist.o2r"}
+repo_dir=$(cd -- "$script_dir/../../.." && pwd)
+host_root=${JPASSIST_HOST_ROOT:-}
+if [[ -z "$host_root" && -d "$repo_dir/../soh" && -f "$repo_dir/../CMakeLists.txt" ]]; then
+    host_root=$(cd -- "$repo_dir/.." && pwd)
+fi
+host_root=${host_root:-$repo_dir}
+app_dir=${JPASSIST_APP_DIR:-"$host_root/build-cmake/soh"}
+plugin_package=${JPASSIST_PLUGIN_PACKAGE:-"$host_root/build-cmake/games/ocarina-of-time/adapters/shipwright/plugin/jp-assist.o2r"}
 config_file="$app_dir/shipofharkinian.json"
 mods_dir="$app_dir/mods"
 installed_plugin="$mods_dir/jp-assist.o2r"
